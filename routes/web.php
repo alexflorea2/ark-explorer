@@ -1,5 +1,6 @@
 <?php
 
+use Ark\App\Services\ApiMainNetGateway;
 use Illuminate\Support\Facades\Route;
 
 /*
