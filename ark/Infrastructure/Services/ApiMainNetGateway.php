@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ark\App\Services;
+namespace Ark\Infrastructure\Services;
 
 
 class ApiMainNetGateway extends ApiGateway

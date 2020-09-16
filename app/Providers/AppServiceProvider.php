@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Ark\App\Services\ApiDevNetGateway;
-use Ark\App\Services\ApiGatewayInterface;
-use Ark\App\Services\ApiMainNetGateway;
+use Ark\Infrastructure\Services\ApiDevNetGateway;
+use Ark\Infrastructure\Services\ApiGatewayInterface;
+use Ark\Infrastructure\Services\ApiMainNetGateway;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

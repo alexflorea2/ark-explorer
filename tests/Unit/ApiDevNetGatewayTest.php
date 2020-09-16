@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
-use Ark\App\Services\ApiDevNetGateway;
-use Ark\App\Services\ApiGateway;
-use Ark\App\Services\ApiMainNetGateway;
+use Ark\Infrastructure\Services\ApiDevNetGateway;
+use Ark\Infrastructure\Services\ApiGateway;
+use Ark\Infrastructure\Services\ApiMainNetGateway;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Http;
