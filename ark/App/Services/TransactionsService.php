@@ -19,7 +19,25 @@ class TransactionsService
         $this->api = $api;
     }
 
-    public function getTransactions(int $page = 1, int $limit = 10)
+    public function makeTransaction(array $data) : TransactionModel
+    {
+        $sender = (new WalletModel())->setId($data['sender']);
+
+        $recipient = (new WalletModel())->setId($data['recipient']);
+
+        return (new TransactionModel())
+            ->setId($data['id'])
+            ->setAmount($data['amount'])
+            ->setFee($data['fee'])
+            ->setTimestamp($data['timestamp'])
+            ->setType($data['type'])
+            ->setAsset($data['asset'] ?? [])
+            ->setTypeGroup($data['typeGroup'])
+            ->setSender($sender)
+            ->setRecipient($recipient);
+    }
+
+    public function getTransactions(int $page = 1, int $limit = 10) : TransactionsResource
     {
         $apiData = $this->api->getTransactions($page, $limit);
 
@@ -30,18 +48,16 @@ class TransactionsService
 
         foreach($apiData['data'] as $item)
         {
-            $sender = (new WalletModel())->setId($item['sender']);
-
-            $recipient = (new WalletModel())->setId($item['recipient']);
-
-            $collection->add(
-                        (new TransactionModel())
-                            ->setId($item['id'])
-                            ->setSender($sender)
-                            ->setRecipient($recipient)
-            );
+            $collection->add( $this->makeTransaction($item) );
         }
 
         return new TransactionsResource($collection, $totalItems, $perPage);
+    }
+
+    public function getTransaction(string $id) : TransactionModel
+    {
+        $apiData = $this->api->getTransaction($id);
+
+        return $this->makeTransaction($apiData['data']);
     }
 }
