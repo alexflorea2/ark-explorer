@@ -14,7 +14,7 @@ class BlocksServiceTest extends TestCase
     public function testComputesBlockHeight()
     {
         Http::fake([
-                       'explorer.ark.io/api/*' => Http::response('{"data":{"block":{"height":1000}}}', 200),
+                       '*' => Http::response('{"data":{"block":{"height":1000}}}', 200),
                    ]);
 
         $service = app(BlocksService::class);

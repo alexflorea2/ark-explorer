@@ -19,6 +19,9 @@
             </div>
             <nav :class="{'flex': open, 'hidden': !open}"
                  class="flex-col flex-grow hidden pb-4 md:pb-0 md:flex md:justify-end md:flex-row">
+
+                @livewire('network-widget')
+
                 <a class="top-nav__item @if( request()->routeIs('transactions*') ) active @endif  md:mt-0 md:ml-4 focus:text-gray-900  focus:bg-gray-200 focus:outline-none focus:shadow-outline"
                    href="{{route('transactions')}}">Transactions</a>
                 <a class="top-nav__item @if( request()->routeIs('blocks*') ) active @endif md:mt-0 md:ml-4 focus:text-gray-900  focus:bg-gray-200 focus:outline-none focus:shadow-outline"

@@ -16,14 +16,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if( env('ARK_NET','main') == 'main' )
-        {
-            $this->app->bind(ApiGatewayInterface::class, ApiMainNetGateway::class);
-        }
-        else
-        {
-            $this->app->bind(ApiGatewayInterface::class, ApiDevNetGateway::class);
-        }
     }
 
     /**
@@ -33,6 +25,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        if( env('ARK_NET','main') == 'main' )
+        {
+            $this->app->bind(ApiGatewayInterface::class, ApiMainNetGateway::class);
+        }
+        else
+        {
+            $this->app->bind(ApiGatewayInterface::class, ApiDevNetGateway::class);
+        }
     }
 }

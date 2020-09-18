@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('transactions');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
@@ -29,3 +29,5 @@ Route::get('/blocks', [App\Http\Controllers\BlocksController::class, 'list'])->n
 Route::get('/blocks/{id}', [App\Http\Controllers\BlocksController::class, 'show'])->name('blocks.detail');
 
 Route::get('/wallets/{id}', [App\Http\Controllers\WalletsController::class, 'show'])->name('wallet.detail');
+
+Route::get('/network/change', [App\Http\Controllers\Networkcontroller::class, 'changeNetwork'])->name('network.change');

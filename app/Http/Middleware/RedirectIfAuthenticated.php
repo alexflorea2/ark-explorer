@@ -3,6 +3,9 @@
 namespace App\Http\Middleware;
 
 use App\Providers\RouteServiceProvider;
+use Ark\Infrastructure\Services\ApiDevNetGateway;
+use Ark\Infrastructure\Services\ApiGatewayInterface;
+use Ark\Infrastructure\Services\ApiMainNetGateway;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
