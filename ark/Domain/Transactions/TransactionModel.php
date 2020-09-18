@@ -4,6 +4,7 @@
 namespace Ark\Domain\Transactions;
 
 
+use Ark\Domain\Blocks\BlockModel;
 use Ark\Domain\Wallets\WalletModel;
 
 class TransactionModel
@@ -17,6 +18,9 @@ class TransactionModel
     private $fee;
     private $timestamp;
     private array $asset;
+    private $nonce;
+    private BlockModel $block;
+    private $confirmations;
 
     public const TYPE_GROUP_CORE = 1;
     public const TYPE_GROUP_MAGISTRATE = 2;
@@ -39,6 +43,103 @@ class TransactionModel
     public const MAGISTRATE_TYPE_BRIDGECHAIN_REGISTRATION = 3;
     public const MAGISTRATE_TYPE_BRIDGECHAIN_RESIGNATION = 4;
     public const MAGISTRATE_TYPE_BRIDGECHAIN_UPDATE = 5;
+
+    public function getReadableType()
+    {
+        $coreTypes = [
+                self::CORE_TYPE_TRANSFER => "Transfer",
+                self::CORE_TYPE_SECOND_SIGNATURE => "2nd Signature Registration",
+                self::CORE_TYPE_DELEGATE_REGISTRATION => "Delegate Registration",
+                self::CORE_TYPE_VOTE => "Vote",
+                self::CORE_TYPE_MULTI_SIGNATURE => "Multisignature Registration",
+                self::CORE_TYPE_IPFS => "IPFS",
+                self::CORE_TYPE_TIMELOCK => "Timelock",
+                self::CORE_TYPE_TIMELOCK_CLAIM => "Timelock Claim",
+                self::CORE_TYPE_TIMELOCK_REFUND => "Timelock Refund",
+                self::CORE_TYPE_MULTI_PAYMENT => "Multipayment",
+                self::CORE_TYPE_DELEGATE_RESIGNATION => "Delegate Resignation",
+
+        ];
+
+        $magistrateTypes = [
+            self::MAGISTRATE_TYPE_BUSINESS_REGISTRATION => "Business Registration",
+            self::MAGISTRATE_TYPE_BUSINESS_RESIGNATION => "Business Resignation",
+            self::MAGISTRATE_TYPE_BUSINESS_UPDATE => "Business Update",
+            self::MAGISTRATE_TYPE_BRIDGECHAIN_REGISTRATION => "Bridgechain Registration",
+            self::MAGISTRATE_TYPE_BRIDGECHAIN_RESIGNATION => "Bridgechain Resignation",
+            self::MAGISTRATE_TYPE_BRIDGECHAIN_UPDATE => "Bridgechain Update",
+        ];
+
+        if( $this->typeGroup === self::TYPE_GROUP_CORE )
+        {
+            return $coreTypes[$this->type];
+        }
+        elseif( $this->typeGroup === self::TYPE_GROUP_MAGISTRATE )
+        {
+            return $magistrateTypes[$this->type];
+        }
+
+        return "n/a";
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getNonce()
+    {
+        return $this->nonce;
+    }
+
+    /**
+     * @param mixed $nonce
+     * @return TransactionModel
+     */
+    public function setNonce($nonce)
+    {
+        $this->nonce = $nonce;
+
+        return $this;
+    }
+
+    /**
+     * @return BlockModel
+     */
+    public function getBlock(): BlockModel
+    {
+        return $this->block;
+    }
+
+    /**
+     * @param BlockModel $blockId
+     * @return TransactionModel
+     */
+    public function setBlock(BlockModel $blockId): TransactionModel
+    {
+        $this->block = $blockId;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfirmations()
+    {
+        return $this->confirmations;
+    }
+
+    /**
+     * @param mixed $confirmations
+     * @return TransactionModel
+     */
+    public function setConfirmations($confirmations)
+    {
+        $this->confirmations = $confirmations;
+
+        return $this;
+    }
+
 
     public function getId() : string
     {
@@ -146,6 +247,16 @@ class TransactionModel
     public function isMultiPayment()
     {
         return $this->typeGroup === self::TYPE_GROUP_CORE && $this->type === self::CORE_TYPE_MULTI_PAYMENT;
+    }
+
+    public function noOfPaymentsMade()
+    {
+        if( empty($this->asset) || ( isset( $this->asset['payments'] ) && empty($this->asset['payments']) )  )
+        {
+            return 0;
+        }
+
+        return count($this->asset['payments']);
     }
 
     private function calculateMultiPaymentAmount()

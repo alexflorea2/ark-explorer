@@ -22,10 +22,22 @@
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.2.1/dist/alpine.js" defer></script>
     </head>
     <body>
+
+        @include('layouts.navigation')
+
+        @if( isset($header) )
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="bg-blue-900 text-white px-6 overflow-hidden sm:rounded-lg">
+                    {{ $header }}
+                </div>
+            </div>
+        </div>
+        @endif
+
         <div class="font-sans text-gray-900 antialiased">
             {{ $slot }}
         </div>
-
 
         @livewireScripts
         <script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js" data-turbolinks-eval="false"></script>

@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Ark\Infrastructure\ApiGatewayException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -25,6 +26,16 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    public function render($request, $exception)
+    {
+        if( !is_null($exception->getPrevious()) && $exception->getPrevious() instanceof ApiGatewayException) {
+            //custom error page when custom exception is thrown
+            return response()->view('errors.api_gateway', [], 500);
+        }
+
+        return parent::render($request, $exception);
+    }
+
     /**
      * Register the exception handling callbacks for the application.
      *
@@ -32,6 +43,5 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        //
     }
 }

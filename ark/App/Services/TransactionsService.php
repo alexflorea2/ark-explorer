@@ -4,60 +4,48 @@
 namespace Ark\App\Services;
 
 
-use Ark\Domain\Transactions\TransactionModel;
-use Ark\Domain\Transactions\TransactionsCollection;
-use Ark\Domain\Transactions\TransactionsResource;
-use Ark\Domain\Wallets\WalletModel;
+use Ark\App\Factories\TransactionsFactory;
+use Ark\Domain\Transactions\{TransactionModel, TransactionsResource};
 use Ark\Infrastructure\Services\ApiGatewayInterface;
+use Psr\Log\LoggerInterface;
 
 class TransactionsService
 {
     private ApiGatewayInterface $api;
+    private TransactionsFactory $transactionsFactory;
+    private LoggerInterface $logger;
 
-    public function __construct(ApiGatewayInterface $api)
+    public function __construct(ApiGatewayInterface $api, TransactionsFactory $transactionsFactory, LoggerInterface $logger)
     {
         $this->api = $api;
-    }
-
-    public function makeTransaction(array $data) : TransactionModel
-    {
-        $sender = (new WalletModel())->setId($data['sender']);
-
-        $recipient = (new WalletModel())->setId($data['recipient']);
-
-        return (new TransactionModel())
-            ->setId($data['id'])
-            ->setAmount($data['amount'])
-            ->setFee($data['fee'])
-            ->setTimestamp($data['timestamp'])
-            ->setType($data['type'])
-            ->setAsset($data['asset'] ?? [])
-            ->setTypeGroup($data['typeGroup'])
-            ->setSender($sender)
-            ->setRecipient($recipient);
+        $this->transactionsFactory = $transactionsFactory;
+        $this->logger = $logger;
     }
 
     public function getTransactions(int $page = 1, int $limit = 10) : TransactionsResource
     {
-        $apiData = $this->api->getTransactions($page, $limit);
-
-        $totalItems = $apiData['meta']['totalCount'];
-        $perPage =  $apiData['meta']['count'];
-
-        $collection = new TransactionsCollection();
-
-        foreach($apiData['data'] as $item)
+        $totalItems = 0;
+        $items = [];
+        try {
+            $apiData = $this->api->getTransactions($page, $limit);
+            $totalItems = $apiData['meta']['totalCount'];
+            $items = $apiData['data'];
+        }
+        catch (\Exception $e)
         {
-            $collection->add( $this->makeTransaction($item) );
+            // Api did not respond
+            $info = json_encode($e->getTrace()[1]);
+            $this->logger->error("{$info}");
+            $this->logger->error($e->getMessage());
         }
 
-        return new TransactionsResource($collection, $totalItems, $perPage);
+        return $this->transactionsFactory->makeTransactionsResource($totalItems, $items);
     }
 
     public function getTransaction(string $id) : TransactionModel
     {
         $apiData = $this->api->getTransaction($id);
 
-        return $this->makeTransaction($apiData['data']);
+        return $this->transactionsFactory->makeTransaction($apiData['data']);
     }
 }

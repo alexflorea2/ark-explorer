@@ -19,8 +19,14 @@ class TransactionsCollection  extends \IteratorIterator
     {
         $this->getInnerIterator()->append($transaction);
     }
+
     public function set(int $key, TransactionModel $transaction)
     {
         $this->getInnerIterator()->offsetSet($key, $transaction);
+    }
+
+    public function count()
+    {
+        return iterator_count( $this->getInnerIterator() );
     }
 }

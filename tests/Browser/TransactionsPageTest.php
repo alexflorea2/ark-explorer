@@ -8,16 +8,16 @@ use Tests\DuskTestCase;
 
 class TransactionsPageTest extends DuskTestCase
 {
-    /**
-     * A Dusk test example.
-     *
-     * @return void
-     */
-    public function testExample()
+    public function testListing()
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/transactions')
-                    ->assertSee('tranzactii');
+                    ->assertSee('Transactions')
+                    ->scrollIntoView('.livewire-pagination')
+                    ->assertSee('Showing 1 to ');
+
+            $browser->click('.table-item-row:nth-child(1)');
+            $browser->assertSee('Transaction');
         });
     }
 }

@@ -8,13 +8,11 @@ class TransactionsResource
 {
     private TransactionsCollection $items;
     private int $total;
-    private int $perPage;
 
-    public function __construct(TransactionsCollection $items, int $total, int $perPage)
+    public function __construct(TransactionsCollection $items, int $total)
     {
         $this->items = $items;
         $this->total = $total;
-        $this->perPage = $perPage;
     }
 
     public function getItems() : TransactionsCollection
@@ -27,8 +25,8 @@ class TransactionsResource
         return $this->total;
     }
 
-    public function getPerPage() : int
+    public function getNoOfItems() : int
     {
-        return $this->perPage;
+        return $this->items->count();
     }
 }

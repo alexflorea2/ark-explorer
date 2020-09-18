@@ -4,6 +4,8 @@
 namespace Ark\Infrastructure\Services;
 
 
+use Ark\Infrastructure\ApiGatewayException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class ApiGateway implements ApiGatewayInterface
@@ -22,7 +24,9 @@ class ApiGateway implements ApiGatewayInterface
                                     ->withHeaders(['Content-Type'=>'application/json'])
                                     ->get(static::API_URL . $path, $params);
 
-        $response->throw();
+        if ($response->serverError() || $response->clientError()) {
+            throw new ApiGatewayException();
+        }
 
         return $this->decode($response->body());
     }
@@ -32,9 +36,14 @@ class ApiGateway implements ApiGatewayInterface
         return json_decode($jsonString, $assoc = true, $depth = 512, JSON_THROW_ON_ERROR);
     }
 
+    public function getBlockchain() : array
+    {
+        return $this->call("blockchain");
+    }
+
     public function getTransactions(int $page = 1, int $limit = 10) : array
     {
-        return $this->call('transactions',['page'=>$page,'limit'=>$limit]);
+        return $this->call("transactions",['page'=>$page,'limit'=>$limit]);
     }
 
     public function getTransaction(string $id) : array
@@ -44,7 +53,7 @@ class ApiGateway implements ApiGatewayInterface
 
     public function getBlocks(int $page = 1, int $limit = 10) : array
     {
-        return $this->call('blocks',['page'=>$page,'limit'=>$limit]);
+        return $this->call("blocks",['page'=>$page,'limit'=>$limit]);
     }
 
     public function getBlock(string $id) : array
@@ -54,11 +63,16 @@ class ApiGateway implements ApiGatewayInterface
 
     public function getWallets(int $page = 1, int $limit = 10) : array
     {
-        return $this->call('wallets',['page'=>$page,'limit'=>$limit]);
+        return $this->call("wallets",['page'=>$page,'limit'=>$limit]);
     }
 
     public function getWallet(string $id) : array
     {
         return $this->call("wallets/{$id}");
+    }
+
+    public function getWalletTransactions(string $id, int $page = 1, int $limit = 10) : array
+    {
+        return $this->call("wallets/{$id}/transactions", ['page'=>$page,'limit'=>$limit]);
     }
 }
